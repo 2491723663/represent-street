@@ -46,8 +46,6 @@ DEFAULT_REQUEST_HEADERS = {
   'Accept-Language':'h-CN,zh;q=0.9',
   'accept-encoding':'gzip, deflate',
   'upgrade-insecure-requests':'1',
-
-
 }
 #download_timeout = 10
 
@@ -63,7 +61,6 @@ DEFAULT_REQUEST_HEADERS = {
 #See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
    'Amazon_su.middlewares.AmazonSuDownloaderMiddleware': 543,
-   #'scrapy.downloadermiddlewares.retry.RetryMiddleware' : None,
 
 }
 
