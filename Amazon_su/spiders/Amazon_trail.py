@@ -64,9 +64,6 @@ class AmazonTrailSpider(scrapy.Spider):
             item["rank_small"] = ";".join(list)
             print(";".join(list))
 
-
-
-
         yield item
 
         # 统计耗时

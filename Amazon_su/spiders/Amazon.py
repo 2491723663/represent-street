@@ -1,5 +1,4 @@
 import scrapy
-from selenium import webdriver
 from Amazon_su.items import AmazontestItem
 import time
 import sys
@@ -64,7 +63,7 @@ class AmazonSpider(scrapy.Spider):
         page_text = response.text
 
         #通过正则表达式解析数据
-        pattern_big = re.compile('#(.*?\sin[A-Za-z &]+)\(')
+        pattern_big = re.compile('#([0-9,]+\sin[A-Za-z &]+)\(')
         item_big = re.findall(pattern_big, page_text)
         if item_big!=None:
             item["rank_big"] = " ".join(item_big)
