@@ -14,6 +14,7 @@ from scrapy.http import HtmlResponse
 import requests
 import logging
 import time
+import hashlib
 
 
 
@@ -511,19 +512,56 @@ class AmazonSuDownloaderMiddleware:
         'session-id=142-5282781-9911118; session-id-time=2082787201l; i18n-prefs=USD; ubid-main=131-8651721-2234027; session-token=xq662Bc7Q3W0jUBS72A/XvpJV7u1cDqWDZRcdqDNahQvBz8iviEdYLwmAB//AbxPJcCV5WqBPO0Si25T3edH42jgoi9CMfeCjHe3u0M/9t00L2eIfTx0+tAS9EPI7NQkROLoN1BUYeAs6s9abCDfk+V4fKieQFVmohqo5ZNVYpnrv/6mcMXzcM1P2EBWWgHg; skin=noskin;',
         'session-id=138-7317938-8759702; session-id-time=2082787201l; i18n-prefs=USD; ubid-main=133-8818000-7053324; session-token=nHKKGHjE6swzotCIWBYVYzWPjK6PGRgaFREGIyCKplOg4w1jV6iIfmFLZKoZgE1vsv6BPV0iTJWyS2hNrAUmHUP6vHNBTZS6It5lanQGYPSSlAvVEc54Dum1oxNjWGVH7U3hwIqmKDaQ5ye+qOikcNwvdURvMc3jGai1jsbLQFrWVvw2yeqk44vuGeapywRf; lc-main=zh_CN; sp-cdn="L5Z9:CN";',
         'session-id=146-5756234-7241934; session-id-time=2082787201l; i18n-prefs=USD; ubid-main=131-7242671-3582620; lc-main=en_US; session-token=wh16RfTfTAqjfzwc1IllymdrAtLh+VYDcrpw3C0EE3OPFbG/04ibRbQY8IoAnOtYSEfdGg9I4CGCxonZmz4ZaRMxgYne0dVszH5ESVN2DbvHpa0Ksz7SAFf2CrAZ6/PoDVVwWh4FNC4q2oM/UoleZtSH3AXiTePwnrnCy2MB5MRkAu0b5nDdTAMpAhmOUsqx; skin=noskin; ',
-
+        # 网吧       360极速浏览器      UC浏览器  火狐浏览器  百度浏览器  360安全浏览器
+        # 31号 google QQ 都来米 360安全浏览器
+        'session-id=146-0514853-1584968; session-id-time=2082787201l; i18n-prefs=USD; skin=noskin; ubid-main=132-1863388-4717049; session-token=JuCOV/bzdXQkOy0+KiBLWFaYpYH1kcKdwKrGFCpI7lu2SC3e8zF11J5LLCRJ0Xhf7I6cZv1MYYSjacXjgrw3SlDI1v9h5zTFKfZ1bci7770K7eUvUt4jgewQxlKWgaPrB6o3J4gEKnlephHC6OojkDGC7MBGlNr2N9qo5Nbo1VZS5xaB2iV277CZ+XEF9WSoB3EU8KP/R8gFEbSggkKRoxLTlRkfQWy//20GDhy6DIq7oPJSa7wxWkzFgt/XlvWX; lc-main=en_US; ',
+        'session-id=139-1566234-4202019; session-id-time=2082787201l; i18n-prefs=USD; skin=noskin; ubid-main=131-9625334-4552859; session-token=+vQVHgmkPxAm75MlZKpBN3pYLQwY4E+DT6s830l3OoUomg7VIztHSGG58aI8QRsgfZlC5zzulNqBEMcDQsv90znWMC6xXeYaBZvOGrU3n2ahFuMu/XsUjh4GFW7U0B578ob6kw2EY/9qTGk8hJT+JfIRlo7sAl+SoIicm/gVvcOluBkQNjq7q+repa8n/sz9; lc-main=en_US',
+        'session-id=143-6682756-1730816; session-id-time=2082787201l; i18n-prefs=USD; skin=noskin; ubid-main=135-6174055-2672132; session-token=iiCYybCIBt1bZqO0UJ16iceW5mMC7wDITPgu26NXsM0vRja2eaaWUyD4PdS69g0Fjf7HRhr3m0ybNiuOZV83peET/agsd3smEHOaD6mi08ihUYTklsFRPWHBUVW3Ex8ad/ttfjMP71XtBibvJVJC6T/OTV/wI4JL6JGRZ+ldUtf6ZHxoFuqg/xhZ7s2iOjorIeu8DV+w6/2vRppfFWoI5gIRDop32C7BKVMGhDAQ0uJNj5/6tq5dcwqYuk37cG2p; lc-main=en_US',
+        'session-id-time=2082787201l; session-id=141-5688404-2093109; ubid-main=131-8100465-1055321; i18n-prefs=USD; skin=noskin; session-token=Xl+Iw7WflK5NgdqdjDrauC34IiAlHqd8CKLJHy5hO9tOfwGXQ4inUM7EikMzgk+u8XNSxseyfE79G/tBjFiVcQXCc863HLN6r35IgJFIwWOKjmsUVYAn5bLXyEjg+LdDKjSnGgwLxA0/IAKTxpkvXqrem3uFNEtaHOEIbEubrRMIGifv3v6OCdlRQ9MfYJTu; lc-main=en_US; '
+        # 24号 google QQ 360极速浏览器 都来米 UC浏览器 火狐浏览器 百度浏览器
+        'session-id=141-4123112-6591014; session-id-time=2082787201l; i18n-prefs=USD; skin=noskin; ubid-main=135-3303293-0195355; session-token=QTLrnhq2C0bzhZ5NmGVH6DBfcTVwcS2af6Sw2QvNx3Ln3BHNYG0t6ABH+4n4moKeKinObscXpdETod3ouuQoSGgeLNeRh4G9y+LgDaf+Rh6eYGIdxaeRDEPtfEJibGCsZF6s6Vcx/WqtoEeB08fDl8TZZTBesWWIXWE6uYBcROnLkrYqQRsTYwxfxiPKZIMWPjny+7wZQJYgM9h7gatiN4+Nos3A7IboPPybX/sfiDHJoEwx/8+p3wOIN3pLL1Zh; lc-main=en_US; ',
+        'session-id=140-1656275-3360555; session-id-time=2082787201l; i18n-prefs=USD; skin=noskin; ubid-main=131-2482844-9002324; session-token=4aE04S7Uq0fv8qm6IGHJAx/2EWF9HuFhZgZpM9/Z9UysxyQJSNmZsIzff3HTSTfFHvDmehU6EUfuRwj1D2LNf0BlIF6MTg3Uk8SCsXEHiigsyH/Uf/iHlANUPdjN477yqVTaiSAICnIrhC0SnZiN73aQIiUAgddv+6d7YPrKiyyFLqt7F+lqAvx82Nr/iLwVt8l4RsoDJmAVyZfSVp3jGX+WZ9DkkWqRCjJWTFHBzn6IQOaJto9wsp0d/T/2itoS; lc-main=en_US;',
+        'session-id-time=2082787201l; i18n-prefs=USD; skin=noskin; session-id=138-0923525-9612617; ubid-main=134-6470292-6819701; session-token=4q50B/vZtLaulAnpIKIC4pSJ4C800Gs55KOdqpmbxW/ES3oRclVQiKO/1xjy9O3F2N7DpR4RGIgndWm7NjEtOy6cIjaZEhUjWED4h9y4rkwWHNAGBhqO/jOhoyC5OCj0N6TGLD/IXN+xAXOR6u7hKZeeiocY/dxqedI/1wVRhfan3Zlyn/kYL9MwfNzwxHo+BIrjM2qyidnvx+p/BTwvcNHu1j2cEuUEuIiEyq2BE3YX04u2PIDiDMT32aqNVgMT; lc-main=en_US;'
+        'session-id=143-3306395-2610428; session-id-time=2082787201l; i18n-prefs=USD; skin=noskin; ubid-main=134-0112836-6432805; session-token=yyVOs0RC2DbXUL4GOat++kvITwop6HokDS0t5m1+In+92/ZSWzwnZzLwEw10GJGgSXgvjyMKkx+V8t8N13ZEgwzKVNKx+oJUOaTrqGND85J9GgYtPexnNhKGb3KbOy/G4mnBNrTX+CEjtbhDLBHHSlieydO6y8ZIgJ1n2qyczMkDVoCTQ2xmDKKr/Tr02cWAoYxj3JqckiQPIzzV7NbIMrbfeppfutLVVJN1tUnByjc0kgUA23RrEy3Fs18xG+bc; lc-main=en_US; ',
+        'i18n-prefs=USD; session-token=A2iSrNWWbG/flxkP2F7uDvT2+Oue5CyP3WwtOB0aZ1LEECOGs8j2QneOdG2dHpc/kcP+7fMayzuRHs+ZgOMQm29Gjs/CPz01UDX6kTA12kb3Ytgmb7BSyRBmxrYpYJTysqQ2fTY+cJPvzLqKcb83Ep/1z10LVDeIA9qjhPvSSY4MXP9sIHZ1OVOef1XSem/Bz7re4lCQYf+xSqfbmFjatsWQeGoQ8T/w0Kx1EpsTHb2vl7G8SmMWhySJK0ooBlR9; skin=noskin; lc-main=en_US;  ubid-main=132-3456021-6337910; session-id-time=2082787201l; session-id=141-9285879-1700752',
+        'session-id=147-3145104-7746048; session-id-time=2082787201l; i18n-prefs=USD; skin=noskin; ubid-main=131-3556051-3408419; session-token=FQ6aI8BOg6Z4DxRdvF0Qw8R0LoOEQa+B4YI1bPVL/9cj7bnC2C1LVI7KsNLg0Vj8ICs/b6vnst9TvAOzNqRduvEwOkuOm0KxnhdSlKHv+qetEqRk8wNLhoYjtROehkAFK1KU/O43S7/CVWhdi0iJi3YdoUGLNTF3mVaczj4YHXzpYN7kqhEpJLe0USV/oRog/ntnYi9iDhGSZK5/KgfGVEgPBOsBqMusGfiLycL4NsnT9SvFiOArWazNCQ02oQyQ',
+        'i18n-prefs=USD; session-token=F4xGg/dc/oSgwjFGLfNqY8+S4OVX2gdE2BVkcZFZFGOtjuXp+J364pmtaTGO4CNq6nO7eRr0wDU/1shLlayAv4rHWz16yranImX1D3HgifiF7yIhrBZPju2FSlNFjPVt6AktIHfzOd0S2tf0ZJWXCoF3Kzg3rzYHsn88BenFYqbi48H9ejd0CGRzGOJTsvkjmpi1LvODMLdL48wOt8wImJ4wVfPmOX/BpSlp4qD4ekKD0OxZmOH6Bc94940AP365; skin=noskin; lc-main=en_US; ubid-main=135-6612490-4770643; session-id-time=2082787201l; session-id=132-5008406-0554043',
+        # 20号 google QQ 360极速浏览器   都来米    UC浏览器   百度浏览器 360安全浏览器
+        'session-id=138-5479743-9843150; session-id-time=2082787201l; i18n-prefs=USD; skin=noskin; ubid-main=131-4531178-5269122; session-token=p2PT/gRAScSvn+BEkWi1tNDEodw8DrtC73EwMtcxdRHoCeQ6khtOeuc0Knp8jiwqyW/L7KCi/vlt/0QLgHwKBaNAoK+wX1dABhcX7PWFC2/cMPOKKteCNtcBZO3vjwPWMuFv2qtrjEUGE6Ni14ac5dDs8YA3ggO67roqiaamWHGDaa8G+QZfmZFljegp40xJgPjKwBJ1CqKbvGSRJOlHF+QpWcfiH22sYLoL3RaK/wa+2HKiTT54fuDcw9RMgeVT; lc-main=en_US;',
+        'session-id=137-7701586-7007139; session-id-time=2082787201l; i18n-prefs=USD; skin=noskin; ubid-main=135-3146354-7029521; session-token=K6upoLvDqikrB8KxKspIxYLY2QoHX+ZKcxHCaTjOiO+mEJJ6JRgOPHY3YTPvC44OD26Ulhv+GRB2bjAgKVuobGEEGbExUwqzXeiawnYHjDK5YWxPViIr9UwjCPn0Ktk/LLDo55aOM3WUkPdGQ7I3mjjkW1i3bxBITtYnMR1iJYNGUbpDb1XiAdZsW5tagBAjVO9dSKEblFS2SHoKfUYorkpNGaRLHLo2qIgcxGs+YZ6lYmff75RRjS92u3KQPyg/; lc-main=en_US',
+        'session-id-time=2082787201l; session-id=147-3839867-6166437; i18n-prefs=USD; skin=noskin; ubid-main=130-0931514-4253011; session-token=MYbhfqZ0YXET+/yUFC+JfW17QZgLPhWsZB31sIMyuVEorKGOlWDREqN6Vjwwz8aTDUckr+mwsy9WolM/nEwL00GXYMpQf/HQKSMijjP+tI98/DRkAe4Elp9yCfX6vAFYyeLF/tlSSpyicDhrxuOuZCipQShO2dUvRpD9M4nnyL5L384jPuaR74e5/tGqiaPD9RF3rApYM+pgvQ1Z8ANRREe4jxYoL7V3ddBVpYY3gVbP+DQ5sjf+kT+B3kHeL+r5; lc-main=en_US',
+        'session-id=141-6976347-7287568; session-id-time=2082787201l; i18n-prefs=USD; skin=noskin; ubid-main=130-8831093-4485811; session-token=vsC3PXlHupPGugOaSZhjr+GmQqZLXXPOGANx+e6nZi6Q2rrhQkzNkQkf34USNixnWZWQhnH2CGGvrKLA5z8V3qOxrq1ytU08mjzEtgYXXev/etSprCNysyPpkKFhynv5P3XZmfXDwHy5HBfDsPNAKnE7OiHxb9FgTuUDS7St2sDfRbZuyGu8fGkHnOQQ924amXqOG4YfHdwu7NBmfHRR3MelUusaGRdv4+mdW0u1Q/kZDCg+kgho1JCW1FxFtB57; lc-main=en_US;',
+        'i18n-prefs=USD; session-token=e40whPTy2eXFRhcqBjFYMKxCHtimePBv9v9QfbBrs8lbwFuiScvn8/vxZjeAXluHMpDSZ043gqEIP6XAWn7/sMfIpxo/ZZLy3TdqtjH8tJ/Ol8V0Ozk6MlUe6iwqq8PfOlTn7oYWz6ndB71VRrEyrS5g9AeI4emj3Mpbu+V08qtNHvI4H2ID/cftu/FiHDAwtNLZ1XNM1lH2o7rdwNbwAon+hXJ9Tpel+ppbIGE4D+L9D/q8F7ExsDTeZKrPRgHp; skin=noskin; lc-main=en_US;ubid-main=132-1080632-9220841; session-id-time=2082787201l; session-id=145-2468360-2670125',
+        'i18n-prefs=USD; session-token=y2FimZqbOZnXKX52eEN2SX9NSgfidmACn+OojZJZ1Rp753CodqEbbtMvxwPR/+mBG5FefYtyrc/B/0RoHQPbFfTLhllaYwmQAsK/wMJTXsnNYtYXQcLnsBPoHf95+90Jx0Vp/fwGFDOpdtyVzkEul9OFX3PUaIXB3O4ZsmJtcNhJTdHSCVqTWXMj1rGMuFWkQ1g/Tf/xRwB3kIJqMMq48TixNeWFpu1cjtyUa3KFkzQ0IVvHcITHcCWtEISJxKxi; lc-main=en_US; skin=noskin; ubid-main=134-3597488-8892601; session-id-time=2082787201l; session-id=139-8836940-7055437',
+        'session-id-time=2082787201l; i18n-prefs=USD; skin=noskin; session-id=141-4689545-3840458; ubid-main=135-3308252-0466343; session-token=Og75jN/avBLEAI9tj8UCMERF48XPM8TMUhkrLBUvECISPoOi93kMfV+ST3Joc9T5SOWQJPmTbTqUBUI0nJvy0vQ4bsXWCWIzhxKdFrOBI09tEnu2m7u8dXb/grEJdZLEHG5Xs7dt68lEFf+1NqUenZemk02Q5AkzxD0sRl/Y/HgGJ6YgmiXSv3PJWgunnIHRzYR0nsO70tVhZtRgGLRAq8rOIo8wxRAnJlAu7bATtppUh5Cp008DNLKXvdEJBEUt; lc-main=en_US;',
+        # 14号 google QQ 360极速浏览器      UC浏览器     360安全浏览器
+        'session-id=134-4069074-1969200; session-id-time=2082787201l; i18n-prefs=USD; skin=noskin; ubid-main=134-3495192-3298361; session-token=oyHceiLicVguAl1uYmuPJdu8RO+NuZ22Y4S3miTwLaJobvFXE877sNJnb+KA2HlXMu3hYJEsqTpzfGAVCxF4lDxY5ilnEFhOAPRc4/0BXMOBQWar95KOBaLiwGLfsdUVk6Z0G9UoY5DRqL1EQ6/uXg9EvYyQMIg0qzKfGDAZlUzuJY1DM66V2VcbqKa9QnzHoGfr+SSodpAr7aVyKbxklIBBRDNeAwkpQSlLOon/SLKU8JssgoJethcT3OPOJpAd;',
+        'session-id=146-0199434-0196705; session-id-time=2082787201l; i18n-prefs=USD; skin=noskin; ubid-main=134-4624739-9003546; session-token=c+07hoUN4yMy3IuimWCNxxWR6Z4Yo4QMXOzU+lgd83aboFoWud0VGi6faO7wBjpsNvsiKrrIO2Rx8BE1RWhyAGF7nsJK/+Bf527+Msw/9ZUS7JwL37J9Dtq4zBiZ/hr9bjySopLGcckisjqTx9GpD0u5GfaaMgd9ACjRNFhrEF8PI50eiLVOUMQ6ZKVQKt4GDYRfp/GX3LU0ikR2AfMuMS9SniOEjM1GcN41ypxsZ1iIKXIA07QhwyelXv7H8/hC; lc-main=en_US;',
+        'session-id=132-7107348-5796422; session-id-time=2082787201l; i18n-prefs=USD; skin=noskin; ubid-main=134-4899505-4435123; session-token=fzfovR9ByB6zW5VVnVLAkjRzrsm+7q/BbF31PaMOnY5iySVwbhl6dkLETcDpzb7MhC6iU0UQ+HXNSUjX8Vz2at/6wM1gXQ0jI20nBf8Q7dN1xQ0FSQnvrcfyMuW6NoNhR8gSurYZ4wEJ8flt8YxlafeskldD+C5mWnqmD69t2uNvMn3q+toWTJh1h88RWtTMIyC7xIab1tdt744kLIp89v7fpcunSnNMkTB/565DFTErZtDv7TtqigFTmvzTu0Gj; lc-main=en_US;',
+        'i18n-prefs=USD; session-token=YnceT5ZpRJFH7JzLE9+5rY4AnBRF0Ab9VZjCsk+/AFPm8Nc3w24lJV/dWvv2GIRSIOiOkl7SArVmgiyVdYeLCzaEdXF5G9NF/64RJuwGIYYdmNwf+P2F8Z6lKp2sa3jxbsfBZN0o4jJ68sRyconToyVwuXeQmG3QVO0s3jjMtss/IWKTtKrRU6XM4YpjA6vqVX28Cv1o9GeePFYbzLtCPs3SZYD9h+mPBEr3MZZ6+R1BDKhuW5HmwZ64jwo8U7NS; lc-main=en_US; skin=noskin; ubid-main=132-9633637-5020642; session-id-time=2082787201l; session-id=146-3276359-9503100',
+        'session-id=132-6575406-0682049; session-id-time=2082787201l; i18n-prefs=USD; skin=noskin; ubid-main=130-7453059-3294039; session-token=SIT7+pGIb8s26aLT+TEtp/Hdchzf3SbKGj7pTaEH1GTJeCsfVWdfvFR/L1CN4FFxC8h9SXKnZuerL+WeN7erckUFw/n/hoD2AGcKfp2iWWzUgLxeFUCHLIX3svSbiS283oxjrAhA7jclUTpdD+LhdCakwSTkZxu1+tyxKy/bV+NaILLmzm3XqAJhBXqarCxRPn7ySKrVTvVR5TR/giNyrg03jEPGZvYPJFEfQeW3dc+xDFVvqsIw6YENQEgKKmg9; lc-main=en_US; ',
+        # 15号 google QQ 360极速浏览器   都来米    UC浏览器  360安全浏览器
+        'session-id=147-7458030-6148859; session-id-time=2082787201l; i18n-prefs=USD; skin=noskin; ubid-main=132-3935400-8597952; session-token=ejMIkDud0Ns9Z0ks83qisQwUSZ4yFJaScxfW45Fnl4hCZ0zWhzawB4j0q8++44nMOzJhfg64xiEL/JmNaX8mU92klrSi1C8XXTlFL637Z8oHQAU45/GkupoUt+CSXngewVsePaWtrWtPN+22UaiD9Uxku+njwFdc723BUzr12bAeUr58Gy04fVBZaJaAtvUCbYAh88YTtG6wrqpVq0qlAvHMPg7B5cTf2EYIBx69AohBAKD9/10J2EiBxIVsvEVP; lc-main=en_US;',
+        'session-id=140-8796647-9151742; session-id-time=2082787201l; i18n-prefs=USD; skin=noskin; ubid-main=131-0117844-3103255; session-token=emMjWUEcqI+/cutbWtasqz/TzSXtjZsaI5C0s0nF2i+Fvf/9sis4D+89UNpZPFN/TYi+ae0srlLack965sQ2+jVZJP7K52y7Q7IUSNcYP2jvtOX+ZhEFYBiUpxidvYdBLd+BEAAljSoWBsUX10fm6CYjOGryH2ib4P+zsjqE4gBk3TwmDpaXGUWpcibQ8JJ33h/jl4JZL1W/jS71BDHB8FS5aZ95XCMrdZQB4CnU/GiZZIvmczIDYj//lXaE5Hhs; lc-main=en_US',
+        'session-id=134-3120435-7458949; session-id-time=2082787201l; i18n-prefs=USD; skin=noskin; ubid-main=130-7244966-2876621; session-token=8sHlA0FlyS/Yr/BQ17T/r4hVYcHnnfl34HoA/TFxMl2EJtZYLR/KJOYIGuNpXQWdyAJIEqRPDX+oP/Se4Hch9zVmjulFglrUTiEIfCBw0/XW5q8lvMCCcfFR9NdR9bur+05AJWz+FqOnxO9AIXdIG2MCokpyym4laXRA/+kTal0S1QH/+Lu/vFvQVCnsDAmV; lc-main=en_US;',
+        'session-id=134-7738372-3933811; session-id-time=2082787201l; i18n-prefs=USD; skin=noskin; ubid-main=130-8177241-6487318; session-token=M2T30MunUwx1oI31APTJhwux5q1z6gSGpkAGkBerbrQI5TptVPMq3xH5edSpnF0oxmNVKAFo571liSTt/L4dDGAYyepoo11WjeW3WsCL2b3bOb/t8wK5z4qYpe+/dKXYQiK2mjzyZ4XML+11SWxKzp0Nqio5xpwIHi40JkhYTJ2xiC01+OLxPXRELd0otS3A3rSCna5na4OLvq/QgB2M8f9OzEp+ubQ/tokfUYjqYtMeHB08DgOE7xek6aCo6Lnf; lc-main=en_US;',
+        'i18n-prefs=USD; session-token=KAEV5Fs+R8A/r/hpzl65LkSSgPmFtaGmZwqhTx8mFXIKgUEvCJc9zWvET6RjLcav8+LaEZiT2k9Oi8bL/C02jyj/37R/rd8BS+U5mwFCP+fGYwvw//eiQcmDNK0U6fPU+vOi9jtYvuXSoFGqmmCshgSCTCXlBAnxq7hBprlZRZipFCx/UP0Z/FSmCatZLKUJInEGaMjyKlEyc4ajw7yeyDilR3AODB7eTAsJeCr+ls7x4aryjDMoRjj/l+v4hX9m; lc-main=en_US; skin=noskin; ubid-main=135-2601200-8747342; session-id-time=2082787201l; session-id=134-4160070-4148439',
+        'session-id=138-7754933-7263667; session-id-time=2082787201l; i18n-prefs=USD; skin=noskin; ubid-main=131-4033968-8063614; session-token=Eby+INO2+TJnH4eHsYu353ZIjNdUMyqGIFDJHdQ06YHGWRwVmJ4vpkMCqqKR/6c9rOTNpYMRRlJ4+IeKG//wWZ8fkI0R134xsPNXWSi2a4DelU1b0dFn6R3TLFBmDAVEzdBGItuDSUudFaHI6dQNJegB3WWTxypzOXdGcmoGKPF15CXojyZbM782zuwQgvGJ2OvmK7H1CzMkm67u0g5GK0ox3G/qyrekR9BLFfOfMxGGRs7eTcm/B4QKtufC0eby; lc-main=en_US;',
     ]
 
 
 
-
     def process_request(self, request, spider):
+        '''
+            讯代理 动态转发 所需参数
+        '''
 
+        request.headers['Proxy-Authorization'] = spider.auth
         request.headers['User-Agent'] = random.choice(self.user_agents)
 
         request.headers['cookie'] = random.choice(self.cookie)
+        request.meta['proxy']  = "http://" + spider.ip_port
 
-       # request.meta['proxy'] = "http://" + requests.get(url='http://127.0.0.1:5555/random').text
 
 
         return None
@@ -534,5 +572,6 @@ class AmazonSuDownloaderMiddleware:
 
 
     def process_exception(self, request, exception, spider):
+        request.meta['proxy']  = "http://" + spider.ip_port
 
-        pass
+        return request

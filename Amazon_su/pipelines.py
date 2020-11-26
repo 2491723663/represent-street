@@ -34,7 +34,6 @@ class MongoPipeline(object):
     def process_item(self, item, spider):
         name = item.__class__.__name__
         self.db[name].insert_one(dict(item))
-        print("正在存储。。。。", item["url"])
         return item
 
 

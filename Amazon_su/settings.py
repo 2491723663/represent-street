@@ -42,13 +42,10 @@ COOKIES_ENABLED = False
 
 # Override the default request headers:
 DEFAULT_REQUEST_HEADERS = {
-  #'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
   'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
   'Accept-Language':'h-CN,zh;q=0.9',
   'accept-encoding':'gzip, deflate',
   'upgrade-insecure-requests':'1',
-  #'cookie':'session-id=136-5529720-3328761; i18n-prefs=USD; ubid-main=133-5660816-5363143; session-id-eu=257-2101056-5793269; ubid-acbuk=260-4910239-7744262; s_pers=%20s_fid%3D187A3C3CD67FEFBC-2FFDB0D6E686FE9A%7C1761920768571%3B%20s_dl%3D1%7C1604156168572%3B%20gpv_page%3DUS%253AAZ%253ASOA-overview-sell%7C1604156168575%3B%20s_ev15%3D%255B%255B%2527AZUSSOA-sell%2527%252C%25271604154368578%2527%255D%255D%7C1761920768578%3B; session-id-time=2082787201l; s_fid=3A12F7C0ADECDEDD-0E3555974BC6FCE0; s_vn=1636534592951%26vn%3D1; regStatus=pre-register; lc-main=en_US; session-id-time-eu=2236210063l; x-acbuk="lHNb1@yo9qZ?vCy5SJ@H1VUrQgIvSee2wFCmAqLffw2dGDKa2q8NZpL4AbHPy?kK"; at-main=Atza|IwEBIOCVW_F9VCZzG5decp0iDhtqsbPRKwxQYZn9JjiNMlWVYSoipjFOZh-CPp6tOcHsvROzFuhIg1MzGH0rzcr2RAc_fwaix-Xn9Y7-lgga2BzV_4bbxgON1IbfEyftsfz2JR8vIwPyaGPKbkH6B_EO-0fD_PjInV_8DLuHqe9OjK2hvFXNYgZNHgFfqfmHQC20LMCqyR0BIFq-SkPnE0BT4n_66CCMLFulPfmUOFl8cvoYptf_x3OfH6IcZ2JKdPbCrMAj4iARxqhyFHNGYjx-MUrE431Z8CFrpucYBw5xrpsa23TGHVQ_HDHkgiJLpvzdcII; sess-at-main="E4HgM2dAZoY4PVBu+s7ynvdIm6vKNR/icMU74yb96tk="; s_nr=1605687172656-Repeat; s_vnum=2036334690956%26vn%3D3; s_dslv=1605687172660; x-amz-captcha-1=1606056870683070; x-amz-captcha-2=bOPkybjvKxTBKO5DugVtjw==; session-token=mZXba7LAn/OAnCWNMZ3HXHPle1d0/yS4RRDnDo7bGoN5PkStGovzNPzNGD4KfOmnK6I/HfQ9AUC8PMDvwII5ddiS/1O8gItfExe4jMbxXXU0+AXj8E/AjTHLm09ZchR5AvcGCOGjD45s6VXBVqNwZKICtMiO/7SkfNWsj//7DMxGzIUvU76kDzazAYK0de7z;',
- # 'Host':'www.amazon.com',
 
 
 }
@@ -67,6 +64,7 @@ DEFAULT_REQUEST_HEADERS = {
 DOWNLOADER_MIDDLEWARES = {
    'Amazon_su.middlewares.AmazonSuDownloaderMiddleware': 543,
    #'scrapy.downloadermiddlewares.retry.RetryMiddleware' : None,
+
 }
 
 

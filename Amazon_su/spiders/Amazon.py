@@ -5,6 +5,7 @@ import time
 import sys
 import os
 import re
+import hashlib
 
 
 class AmazonSpider(scrapy.Spider):
@@ -18,7 +19,14 @@ class AmazonSpider(scrapy.Spider):
     page_num = 2
 
     def __init__(self):
-
+        #讯代理 动态转发
+        self.orderno = "ZF202011254931xzj1HT"
+        self.secret = "6af156080bfd48b98091db6ff19dd524"
+        self.ip_port = "forward.xdaili.cn:80"
+        self.timestamp = str(int(time.time()))
+        self.string = ("orderno=" + self.orderno + "," + "secret=" + self.secret + "," + "timestamp=" + self.timestamp).encode()
+        self.sign = hashlib.md5(self.string).hexdigest().upper()
+        self.auth = "sign=" + self.sign + "&" + "orderno=" + self.orderno + "&" + "timestamp=" + self.timestamp
         # 计算耗时
         self.start_time = time.perf_counter()
 
@@ -71,7 +79,6 @@ class AmazonSpider(scrapy.Spider):
                 list.append(item_small[0] + item_small[1])
             item["rank_small"] = ";".join(list)
             print(";".join(list))
-        item["cookie"] =  response.request.headers.getlist('cookie')
 
         yield item
 
